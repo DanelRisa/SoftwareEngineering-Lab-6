@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Request Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<div th:replace="header :: header"></div>
+    <h1 class="text-center mb-4">Request Details</h1>
+    <div th:if="${request != null}">
+        <div class="card mb-4">
+            <div class="card-header">
+                Request #<span th:text="${request.id}"></span> - <span th:text="${request.handled} ? 'Processed' : 'Pending'"></span>
+            </div>
+            <div class="card-body">
+                <div th:class="${request.handled} ? 'd-none' : ''">
+                    <form th:action="@{/saverequest}" method="post">
+                        <input type="hidden" name="id" th:value="${request.id}">
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">User Name</label>
+                            <input type="text" class="form-control" name="username" id="userName" th:value="${request.userName}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="courseName" class="form-label">Course Name</label>
+                            <input type="text" class="form-control" name="coursename" id="courseName" th:value="${request.courseName}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="commentary" class="form-label">Commentary</label>
+                            <textarea class="form-control" name="commentary" id="commentary" rows="4" th:text="${request.commentary}" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" name="phone" id="phone" th:value="${request.phone}" required>
+                        </div>
+                        <input type="hidden" name="handled" th:value="${request.handled}">
+                        <button type="submit" class="btn btn-success">Save Request</button>
+                    </form>
+                    <form th:action="@{/processrequest}" method="post" class="mt-2">
+                        <input type="hidden" name="id" th:value="${request.id}">
+                        <button type="submit" class="btn btn-warning">Process Request</button>
+                    </form>
+                </div>
+                <form th:action="@{/deleterequest}" method="post" class="mt-2">
+                    <input type="hidden" name="id" th:value="${request.id}">
+                    <button type="submit" class="btn btn-danger">Delete Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</html>
