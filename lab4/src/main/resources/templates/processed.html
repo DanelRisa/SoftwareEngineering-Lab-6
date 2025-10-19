@@ -1,29 +1,36 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" >
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Processed reqs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body class="bg-light">
 <div th:replace="header :: header"></div>
-    <table class="table table-bordered table-hover">
-        <thead class="table-light">
-        <tr>
-            <th>id</th>
-            <th>User name</th>
-            <th>Course name</th>
-            <th>Phone</th>
-            <th>Details</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="request : ${requests}">
-            <td th:text="${request.id}"></td>
-            <td th:text="${request.userName}"></td>
-            <td th:text="${request.courseName}"></td>
-            <td th:text="${request.phone}"></td>
-            <td><a th:href="@{'/details/' + ${request.id}}" class="btn btn-sm btn-info">Details</a></td>
-        </tr>
-        </tbody>
-    </table>
+
+<div class="container py-4">
+    <div class="row g-4">
+        <div class="col-md-4" th:each="request : ${requests}">
+            <div class="card border-success shadow-sm h-100">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0" th:text="${request.userName}"></h5>
+                    <div>
+                        <span th:text="'#' + ${request.id}" class="small"></span>
+                        <span class="badge bg-info ms-2">Processed</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p><strong>Course</strong> <span th:text="${request.course.name}"></span></p>
+                    <p><strong>Phone</strong> <span th:text="${request.phone}"></span></p>
+                </div>
+                <div class="card-footer bg-light">
+                    <a th:href="@{'/details/' + ${request.id}}" class="btn btn-outline-success w-100">Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
 </html>

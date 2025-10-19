@@ -1,103 +1,133 @@
 package com.example.demo.controllers;
 
 import com.example.demo.entities.ApplicationRequest;
-import com.example.demo.repositories.AppReqRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.entities.Courses;
+import com.example.demo.entities.Operators;
+import com.example.demo.services.AppReqService;
+import com.example.demo.services.CourseService;
+import com.example.demo.services.OperatorService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
-    @Autowired
-    AppReqRepository appReqRepository;
+
+    private final AppReqService appReqService;
+    private final CourseService courseService;
+    private final OperatorService operatorService;
+
     @GetMapping(value = "/")
     public String index(Model model) {
-        List<ApplicationRequest> requests = appReqRepository.findAll();
-        model.addAttribute("requests",  requests);
+        List<ApplicationRequest> requests = appReqService.getAllReq();
+
+        model.addAttribute("requests", requests);
         return "index";
     }
 
     @GetMapping(value = "/addrequest")
-    public String addrequest_page(Model model) {
+    public String addReqPage(Model model) {
+        List<Courses> courses = courseService.getAllCourses();
+        model.addAttribute("courses", courses);
+
         return "addrequest";
     }
-
 
     @PostMapping(value = "/addrequest")
-    public String addRequest(@RequestParam(name = "username") String userName,
-                             @RequestParam(name = "coursename") String courseName,
-                             @RequestParam(name = "commentary") String commentary,
-                             @RequestParam(name = "phone") String phone) {
-        ApplicationRequest request = new ApplicationRequest();
-        request.setUserName(userName);
-        request.setCourseName(courseName);
-        request.setCommentary(commentary);
-        request.setPhone(phone);
-        request.setHandled(false);
+    public String addReq(
+                            @RequestParam(name = "username") String userName,
+                            @RequestParam(name = "course_id") Long courseId,
+                            @RequestParam(name = "commentary") String commentary,
+                            @RequestParam(name = "phone") String phone) {
 
-        appReqRepository.save(request);
-        return "addrequest";
+        appReqService.addReq(userName, courseId, commentary, phone);
+
+        return "redirect:/";
     }
 
+
     @GetMapping(value = "/pending")
-    public String pendingRequests(Model model) {
-        List<ApplicationRequest> pendingRequests = appReqRepository.findByHandled(false);
+    public String pendingReqs(Model model) {
+        List<ApplicationRequest> pendingRequests = appReqService.getPendingReq();
         model.addAttribute("requests", pendingRequests);
+
         return "pending";
     }
 
     @GetMapping(value = "/processed")
-    public String processedRequests(Model model) {
-        List<ApplicationRequest> processedRequests = appReqRepository.findByHandled(true);
+    public String processedReqs(Model model) {
+        List<ApplicationRequest> processedRequests = appReqService.getProcessedReq();
+
         model.addAttribute("requests", processedRequests);
         return "processed";
     }
+
     @GetMapping(value = "/details/{requestId}")
     public String details(Model model, @PathVariable(name = "requestId") Long id) {
-        ApplicationRequest request = appReqRepository.findById(id).orElse(null);
+        ApplicationRequest request = appReqService.getReqById(id);
+
         model.addAttribute("request", request);
+
+        List<Courses> courses = courseService.getAllCourses();
+        model.addAttribute("courses", courses);
+        List<Operators> availableOperators = operatorService.getAllOperators();
+
+        if (request.getOperators() != null) {
+            availableOperators.removeAll(request.getOperators());
+        }
+
+        model.addAttribute("available_operators", availableOperators);
+        List<Operators> assignedOperators = request.getOperators();
+        model.addAttribute("assigned_operators", assignedOperators);
+
         return "details";
     }
 
+@Transactional
+    @PostMapping(value = "/deleterequest")
+    public String deleteReq(@RequestParam(name = "id") Long id) {
+        appReqService.deleteReq(id);
+
+        return "redirect:/";
+    }
     @PostMapping(value = "/saverequest")
-    public String saveRequest(@RequestParam(name = "id") Long id,
+    public String saveReq(    @RequestParam(name = "id") Long id,
                               @RequestParam(name = "username") String userName,
-                              @RequestParam(name = "coursename") String courseName,
+                              @RequestParam(name = "course_id") Long courseId,
                               @RequestParam(name = "commentary") String commentary,
                               @RequestParam(name = "phone") String phone,
                               @RequestParam(name = "handled") boolean handled) {
-        ApplicationRequest request = appReqRepository.findById(id).orElse(null);
-        if (request != null) {
-            request.setUserName(userName);
-            request.setCourseName(courseName);
-            request.setCommentary(commentary);
-            request.setPhone(phone);
-            request.setHandled(handled);
-            appReqRepository.save(request);
-            return "redirect:/details/" + id;
-        }
-        return "redirect:/";
-    }
 
-    @PostMapping(value = "/processrequest")
-    public String processRequest(@RequestParam(name = "id") Long id) {
-        ApplicationRequest request = appReqRepository.findById(id).orElse(null);
-        if (request != null) {
-            request.setHandled(true);
-            appReqRepository.save(request);
-        }
+        appReqService.updateReq(id, userName, courseId, commentary, phone, handled);
+
         return "redirect:/details/" + id;
     }
 
-    @PostMapping(value = "/deleterequest")
-    public String deleteRequest(@RequestParam(name = "id") Long id) {
-        appReqRepository.deleteById(id);
-        return "redirect:/";
+
+
+    @PostMapping(value = "/assignoperators")
+    public String assignOperators(@RequestParam(name = "request_id") Long requestId,
+                                  @RequestParam(value = "operatorIds", required = false) List<Long> operatorIds) {
+
+        if (operatorIds != null && !operatorIds.isEmpty()) {
+            appReqService.assignOperators(requestId, operatorIds);
+        }
+
+        return "redirect:/details/" + requestId;
+    }
+
+    @PostMapping(value = "/unassignoperator")
+    public String removeOperator(
+                                    @RequestParam(name = "operator_id") Long operatorId,
+                                    @RequestParam(name = "request_id") Long requestId) {
+        appReqService.unassignOperator(requestId, operatorId);
+
+
+        return "redirect:/details/" + requestId;
     }
 }
