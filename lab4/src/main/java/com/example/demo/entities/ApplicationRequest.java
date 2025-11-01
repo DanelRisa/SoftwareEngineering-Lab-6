@@ -12,8 +12,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplicationRequest {
 
+public class ApplicationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -22,19 +22,19 @@ public class ApplicationRequest {
     @Column(name = "username", length = 200)
     private String userName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Courses course;
 
     @Column(name = "commentary", length = 200)
     private String commentary;
 
-    @Column(name = "phone", length = 20)
+    @Column(name = "phone", length = 200)
     private String phone;
 
     @Column(name = "handled")
     private boolean handled;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "request_operators",
             joinColumns = @JoinColumn(name = "request_id"),

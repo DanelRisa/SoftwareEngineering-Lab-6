@@ -13,16 +13,21 @@
         <div class="col-md-4" th:each="request : ${requests}">
             <div class="card border-success shadow-sm h-100">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+
+
                     <h5 class="card-title mb-0" th:text="${request.userName}"></h5>
                     <div>
                         <span th:text="'#' + ${request.id}" class="small"></span>
                         <span class="badge bg-info ms-2">Processed</span>
                     </div>
                 </div>
+
+
                 <div class="card-body">
                     <p><strong>Course</strong> <span th:text="${request.course.name}"></span></p>
                     <p><strong>Phone</strong> <span th:text="${request.phone}"></span></p>
                 </div>
+
                 <div class="card-footer bg-light">
                     <a th:href="@{'/details/' + ${request.id}}" class="btn btn-outline-success w-100">Details</a>
                 </div>

@@ -1,5 +1,6 @@
 package com.example.demo.entities;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Courses {
 
     @Id

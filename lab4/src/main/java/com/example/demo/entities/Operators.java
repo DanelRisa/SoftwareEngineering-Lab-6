@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Operators {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -26,7 +25,6 @@ public class Operators {
 
     @Column(name = "department")
     private String department;
-
 
     @ManyToMany(mappedBy = "operators")
     private List<ApplicationRequest> requests;

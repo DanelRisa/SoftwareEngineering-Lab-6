@@ -25,6 +25,7 @@
                         <form th:action="@{/saverequest}" method="post">
                             <input type="hidden" name="id" th:value="${request.id}">
                             <div class="mb-3">
+
                                 <label class="form-label fw-bold">Username</label>
                                 <input type="text" class="form-control" name="username" th:value="${request.userName}" required>
                             </div>
@@ -48,11 +49,12 @@
                             </div>
 
                             <input type="hidden" name="handled" th:value="${request.handled}">
-                                <button type="submit" class="btn btn-primary mb-3">Save Changes</button>
+                                <button type="submit" class="btn btn-success mb-3">Save Changes</button>
 
                         </form>
+
                             <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#assignOperatorModal">Process Request</button>
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#assignOperatorModal">Process Request</button>
                                 <form th:action="@{/deleterequest}" method="post">
                                     <input type="hidden" name="id" th:value="${request.id}">
                                     <button type="submit" class="btn btn-danger">Delete Request</button>
@@ -60,6 +62,7 @@
                             </div>
 
                     </div>
+
 
                     <!-- processed req -->
                     <div th:if="${request.handled}">
@@ -115,6 +118,9 @@
         </div>
     </div>
 
+
+
+
     <!-- modal ops -->
     <div class="modal fade" id="assignOperatorModal" tabindex="-1" aria-labelledby="assignOperatorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -127,12 +133,14 @@
                 <div class="modal-body">
                     <form th:action="@{/assignoperators}" method="post">
                         <input type="hidden" name="request_id" th:value="${request.id}">
-                        <div th:each="operator : ${available_operators}">
+                        <div th:each="operator : ${av_operators}">
                             <div class="form-check">
+
                                 <input class="form-check-input" type="checkbox" name="operatorIds" th:value="${operator.id}" th:id="'operator' + ${operator.id}">
                                 <label class="form-check-label" th:for="'operator' + ${operator.id}" th:text="${operator.name} + ' ' + ${operator.surname} + ' (' + ${operator.department} + ') '"></label>
                             </div>
                         </div>
+
 
                         <div class="mt-3">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>

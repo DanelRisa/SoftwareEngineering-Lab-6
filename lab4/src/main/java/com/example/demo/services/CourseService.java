@@ -17,8 +17,17 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-
     public Courses getCourseById(Long id) {
         return courseRepository.findById(id).orElse(null);
+    }
+    public Courses addCourse(Courses course) {
+        return courseRepository.save(course);
+    }
+    public boolean deleteCourse(Long id) {
+        if (courseRepository.existsById(id)) {
+            courseRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
